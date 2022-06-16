@@ -1,0 +1,93 @@
+<!DOCTYPE aseba-playground>
+<aseba-playground>
+  <author name="André Correia" />
+  <author name="Xiaoyi Cheng" />
+  <description lang="en">
+    A maze that we developed to test our robot for the course Robos Moveis in the course Mestrado em Engenharia Informatica - FCUL
+  </description>
+
+
+  <color name="white" r="1.0" g="1.0" b="1.0" />
+  <color name="wall" r="0.9" g="0.9" b="0.9" />
+  <color name="red" r="0.77" g="0.2" b="0.15" />
+  <color name="green" r="0" g="0.5" b="0.17" />
+  <color name="blue" r="0" g="0.38" b="0.61" />
+
+  <world w="138" h="121" color="black" groundTexture="fundo.png" />
+
+  <robot type="thymio2" x="8.5" y="44" port="33334" angle="1.57" name="Thymio 1" />
+
+  <!--
+
+	Para ajudar a navegar no mapa do labirinto:
+
+	(0,120)			
+	_________________________________________________
+	|												
+	|												
+	|												
+	|												
+	|
+	|												
+	|												
+	|												
+	|_______________________________________________|
+	(0,0)			                                   (137,0)
+
+	-->
+
+  
+  <wall x="1" y="120" l1="137.00" l2="2.00" h="10.00" color="blue" />
+  <wall x="1" y="1" l1="137.00" l2="2.00" h="10.00" color="blue" />
+
+  <wall x="1" y="3" l1="2.00" l2="118.00" h="10.00" color="blue" />
+  <wall x="128.5" y="3" l1="17.00" l2="53.00" h="10.00" color="blue" />
+  <wall x="128.5" y="118" l1="18.00" l2="53.00" h="10.00" color="blue" />
+  
+
+  <!-- muros em horizontal-->
+
+  <wall x="9.50" y="35.00" l1="15.00" l2="2.00" h="10.00" color="wall" />
+  <wall x="9.50" y="69.00" l1="15.00" l2="2.00" h="10.00" color="wall" />
+
+  <wall x="26.50" y="103.00" l1="15.00" l2="2.00" h="10.00" color="wall" />
+  <wall x="26.50" y="52.00" l1="15.00" l2="2.00" h="10.00" color="wall" />
+  <wall x="26.50" y="18.00" l1="15.00" l2="2.00" h="10.00" color="wall" />
+
+  <wall x="44" y="86.00" l1="17.00" l2="2.00" h="10.00" color="wall" />
+
+  <wall x="60.5" y="18.00" l1="15.00" l2="2.00" h="10.00" color="wall" />
+
+  <wall x="69" y="68.00" l1="32.00" l2="2.00" h="10.00" color="wall" />
+  
+  <wall x="77.50" y="103.00" l1="15.00" l2="2.00" h="10.00" color="wall" />
+ 
+
+  <wall x="96.5" y="86.00" l1="15.00" l2="2.00" h="10.00" color="wall" />
+  
+  <wall x="86" y="18.00" l1="32.00" l2="2.00" h="10.00" color="wall" />
+
+
+  <wall x="94.50" y="52.00" l1="52.00" l2="2.00" h="10.00" color="wall" />
+
+  <!-- muros em vertical-->
+  
+  <wall x="18.00" y="86.00" l1="2.00" l2="36.00" h="10.00" color="wall" />
+  <wall x="18.00" y="43.50" l1="2.00" l2="19.00" h="10.00" color="wall" />
+
+  <wall x="35.00" y="52.00" l1="2.00" l2="70.00" h="10.00" color="wall" />
+
+  <wall x="52.00" y="94.00" l1="2.00" l2="17.00" h="10.00" color="wall" />
+  <wall x="52.00" y="43.00" l1="2.00" l2="52.00" h="10.00" color="wall" />
+
+  <wall x="69.00" y="94.50" l1="2.00" l2="52.00" h="10.00" color="wall" />
+  <wall x="69.00" y="26.50" l1="2.00" l2="19.00" h="10.00" color="wall" />
+
+  <wall x="88.00" y="44.00" l1="2.00" l2="18.00" h="10.00" color="wall" />
+
+  <wall x="103.00" y="78.00" l1="2.00" l2="52.00" h="10.00" color="wall" />
+  <wall x="103.00" y="26.50" l1="2.00" l2="19.00" h="10.00" color="wall" />
+
+  <process command=":asebamassloader --once thymio-default-behaviours.aesl tcp:localhost;33334" />
+
+</aseba-playground>

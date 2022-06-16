@@ -1,0 +1,250 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+<event size="1" name="pair_run"/>
+
+
+<!--list of constants-->
+<constant value="11111" name="YES"/>
+<constant value="0" name="NO"/>
+<constant value="2" name="SNIFF_LEFT"/>
+<constant value="1" name="SNIFF_RIGHT"/>
+<constant value="3" name="DECIDE"/>
+<constant value="4" name="TURN_LEFT"/>
+<constant value="5" name="TURN_RIGHT"/>
+<constant value="6" name="GO_BACK"/>
+<constant value="7" name="FRONT"/>
+<constant value="8" name="SUCCESS"/>
+
+
+<!--show keywords state-->
+<keywords flag="true"/>
+
+
+<!--node thymio-II-->
+<node nodeId="1" name="thymio-II">var RIGHT = NO
+var LEFT = NO
+var i = 0
+var timer = NO
+var calc = 10000
+var calc2 = 10000
+var queue[202]
+var count = 0
+var aux = 0
+var help = 0
+# reset outputs
+call sound.system(-1)
+call leds.top(0,0,0)
+call leds.bottom.left(0,0,0)
+call leds.bottom.right(0,0,0)
+call leds.circle(0,0,0,0,0,0,0,0)
+
+event.args[0] = 0
+motor.left.target = 200
+motor.right.target = 200
+call leds.top(0,0,32)
+timer.period[0] = 0
+
+if event.args[1] == SUCCESS then
+	count = 0
+else 
+	i = 0
+	while i &lt; 201 do
+		queue[i] = 0
+		i++
+	end
+end
+
+onevent prox
+
+	when prox.horizontal[1] >= 3800 
+	and prox.horizontal[2] >= 3800
+	and prox.horizontal[3] >= 3800 do 
+		if timer == NO and event.args[1] != SUCCESS then
+			event.args[0] = SNIFF_RIGHT
+		elseif event.args[1] == SUCCESS then
+			event.args[0] = DECIDE
+		end
+	end 
+timer.period[1] = 10
+	
+
+
+	
+onevent timer1
+	
+	if event.args[0] == TURN_LEFT then
+		call leds.top(0,0,32)
+		motor.left.target = 0
+		motor.right.target = 100
+		calc = abs(prox.horizontal[5] - prox.horizontal[6]) 
+		calc2 = abs(prox.horizontal[3] - prox.horizontal[4])
+		
+		if prox.horizontal[5] != 0
+		and prox.horizontal[6] != 0
+		and calc &lt; 30 
+		and prox.horizontal[2] &lt; 2000 then
+			event.args[0] = FRONT	
+		elseif (prox.horizontal[5] == 0
+		or prox.horizontal[6] == 0) 
+		and calc2 &lt; 1000 and calc2 > 400
+		and prox.horizontal[2] &lt; 2000 then
+				event.args[0] = FRONT
+			
+		end
+		
+	elseif event.args[0] == TURN_RIGHT then
+	  	call leds.top(0,0,32)
+		motor.left.target = 100
+		motor.right.target = 0
+		calc = abs(prox.horizontal[5] - prox.horizontal[6]) 
+		calc2 = abs(prox.horizontal[0] - prox.horizontal[1])
+		
+		if prox.horizontal[5] != 0
+		and prox.horizontal[6] != 0
+		and calc &lt; 30 
+		and prox.horizontal[2] &lt; 2000 then
+			event.args[0] = FRONT	
+		elseif (prox.horizontal[5] == 0
+		or prox.horizontal[6] == 0) 
+		and calc2 &lt; 1000 and calc2 > 400
+		and prox.horizontal[2] &lt; 2000 then
+				event.args[0] = FRONT
+			
+		end
+		
+		
+		
+	elseif event.args[0] == GO_BACK then
+		call leds.top(0,0,32)
+		motor.left.target = 100
+		motor.right.target = 0
+		calc = abs(prox.horizontal[5] - prox.horizontal[6]) 
+		
+		if calc &lt; 30 
+		and prox.horizontal[2] == 0 then
+			event.args[0] = FRONT	
+		end
+
+	elseif event.args[0] == FRONT then
+		call leds.top(0,0,32)
+		motor.left.target = 200
+		motor.right.target = 200
+		timer = NO
+		RIGHT = NO
+		LEFT = NO
+	elseif event.args[0] == SNIFF_RIGHT then
+		call leds.top(32,32,0)
+		motor.left.target = 200
+		motor.right.target = 0
+		timer.period[0] = 1000
+		
+	elseif event.args[0] == SNIFF_LEFT then
+		call leds.top(32,32,0)
+		motor.left.target = 0
+		motor.right.target = 200
+		timer.period[0] = 2300
+		timer = YES
+		button.center = 1
+	elseif event.args[0] == DECIDE then
+		if event.args[1] != SUCCESS then
+			
+		
+			call leds.top(0,0,32)
+			motor.left.target = 0
+			motor.right.target = 0
+			if prox.horizontal[1] >= 0 
+			and prox.horizontal[2] >= 0
+			and prox.horizontal[3] >= 0 then
+				if  prox.horizontal[0] == 0 or prox.horizontal[1] == 0 then
+					LEFT = YES
+				elseif prox.horizontal[4] == 0 or prox.horizontal[3] == 0 then
+				 	RIGHT = YES
+				end
+			end
+			
+			if LEFT == YES
+			and RIGHT == YES then
+				queue[count] = TURN_LEFT count++
+				queue[count] = 2 count ++
+				event.args[0] = TURN_LEFT
+			elseif LEFT == YES then
+				if help == 0 
+				and event.args[1] != SUCCESS then
+					queue[count] = TURN_LEFT count++
+					queue[count] = 1 count ++
+				elseif help > 0 then
+					help --
+				end
+				
+				event.args[0] = TURN_LEFT
+			elseif  RIGHT == YES then
+				if help == 0 
+				and event.args[1] != SUCCESS then
+					queue[count] = TURN_RIGHT count++
+					queue[count] = 1 count ++
+				elseif help > 0 then
+					help--
+				end
+				
+				event.args[0] = TURN_RIGHT
+			else
+				aux = count-1
+				while queue[aux] == 1 do
+					help ++
+					queue[aux] = 0
+					aux = aux - 2
+				end
+				queue[aux-1] = TURN_RIGHT
+				event.args[0] = GO_BACK	
+			end
+		elseif count &lt; 199 then
+			while queue[count+1] == 0 do
+				count = count+2
+			end
+			count = count+2
+			event.args[0] = queue[count-2] 
+		end
+		
+	elseif event.args[0] == SUCCESS then
+		call leds.top(0,32,0)
+		event.args[1] = SUCCESS
+	end
+
+when prox.ground.delta[0] &lt;= 600 and     prox.ground.delta[1] &lt;= 600 do
+        motor.left.target = 0
+        motor.right.target = 0
+        event.args[0] = SUCCESS
+    end
+	
+
+
+onevent timer0
+
+	motor.left.target = 0
+	motor.right.target = 0
+	if prox.horizontal[1] >= 0 
+	and prox.horizontal[2] >= 0
+	and prox.horizontal[3] >= 0 then
+		if  prox.horizontal[0] == 0 or prox.horizontal[1] == 0 then
+			LEFT = YES
+		elseif prox.horizontal[4] == 0 or prox.horizontal[3] == 0 then
+		 	RIGHT = YES
+		end
+	end
+	if timer == NO then
+		event.args[0] = SNIFF_LEFT
+	else
+		event.args[0] = DECIDE
+	end
+	
+	timer.period[0] = 0
+
+	
+
+	</node>
+
+
+</network>
